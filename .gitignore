@@ -1,0 +1,6 @@
+db_creds.yaml
+sql
+target_db_creds.yaml
+__pycache__
+practice.py
+table.csv
