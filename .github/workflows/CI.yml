@@ -21,6 +21,12 @@ jobs:
         run: |
           echo "${{ secrets.TARGET_DB_CREDS }}" > target_db_creds.yaml
 
+      - name: Display db_creds.yaml
+        run: cat db_creds.yaml
+
+      - name: Display target_db_creds.yaml
+        run: cat target_db_creds.yaml
+
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
