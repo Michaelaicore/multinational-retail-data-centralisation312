@@ -11,9 +11,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up database credentials
+      # Create db_creds.yaml from DB_CREDS secret
+      - name: Set up db_creds.yaml
         run: |
           echo "${{ secrets.DB_CREDS }}" > db_creds.yaml
+
+      # Create target_db_creds.yaml from TARGET_DB_CREDS secret
+      - name: Set up target_db_creds.yaml
+        run: |
           echo "${{ secrets.TARGET_DB_CREDS }}" > target_db_creds.yaml
 
       - name: Set up Python
@@ -30,6 +35,7 @@ jobs:
         run: |
           python -m unittest discover -s test
 
+      # Clean up secret files after use
       - name: Clean up credentials files
         run: |
           rm db_creds.yaml
