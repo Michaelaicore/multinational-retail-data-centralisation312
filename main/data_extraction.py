@@ -34,15 +34,14 @@ print(df.head())
 """
 
 import os
-
-
 import io
 import json
-import numpy as np
+from pathlib import Path
 from typing import List, Optional, Dict
 
 import requests
 import boto3
+import numpy as np
 import pandas as pd
 import jpype
 import tabula
@@ -57,7 +56,6 @@ from sqlalchemy import (
     Float,
     SmallInteger,
 )
-from pathlib import Path
 
 # Get the current directory where this script is running
 repo_root = Path(__file__).resolve().parent
@@ -67,6 +65,7 @@ os.environ["REPO_ROOT"] = str(repo_root)
 
 print(f"Root repository path: {repo_root}")
 
+# Local imports
 from main.database_utils import DatabaseConnector
 from main.data_cleaning import (
     DataCleaning,

@@ -163,7 +163,7 @@ class TestProductModel(unittest.TestCase):
                 category="Electronics",
                 EAN="ABC123",  # Invalid EAN
                 date_added="2023-06-01",
-                uuid="1234567890123456", # Invalid uuid
+                uuid="1234567890123456",  # Invalid uuid
                 removed="Still_avaliable",
                 product_code="G123",
             )

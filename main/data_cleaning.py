@@ -216,11 +216,6 @@ class PaymentModel(BaseModel):
         # Clean the card number by removing non-digit characters
         return re.sub(r"\D", "", value)
 
-        # value = re.sub(r'\D', '', value).lstrip('?')
-        # if not value.isdigit() or not (9 <= len(value) <= 19):
-        #     raise ValueError("Card number must contain only digits and be between 13 and 19 digits.")
-        # return str(value)
-
     @field_validator("date_payment_confirmed", mode="before")
     def validate_and_clean_date_payment(cls, value):
         """
@@ -658,8 +653,6 @@ class DataCleaning:
         self.invalid_data = None
         self.invalid_errors = None
         self.model_class = model_class
-        # self.project_name = project_name
-        # self.module_name = module_name
         self.class_name = class_name
         self.logger = self._setup_logger()
 

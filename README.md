@@ -1,4 +1,21 @@
 # Project Title: Sales Data Extraction and Validation
+![Python](https://img.shields.io/badge/python-3.8-blue.svg)
+![Pydantic](https://img.shields.io/badge/pydantic-v2-orange)
+![AWS S3](https://img.shields.io/badge/AWS-S3-green)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13-blue)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Python CI](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/actions/workflows/CI.yml/badge.svg)
+![AWS S3](https://img.shields.io/badge/AWS-S3-green)
+![API](https://img.shields.io/badge/API-Restful-blue)
+![Unittest](https://img.shields.io/badge/unittest-passing-brightgreen)
+![Logging](https://img.shields.io/badge/Logging-Enabled-blue)
+![Pandas](https://img.shields.io/badge/Pandas-v1.3.3-orange)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-v1.4.23-red)
+![YAML](https://img.shields.io/badge/YAML-Supported-yellow)
+![AWS](https://img.shields.io/badge/AWS-Cloud-orange)
+![S3](https://img.shields.io/badge/S3-Bucket-green)
+![Boto3](https://img.shields.io/badge/Boto3-v1.18.26-blue)
+![SQL](https://img.shields.io/badge/SQL-PostgreSQL-lightgrey)
 
 ## Table of Contents
 1. [Project Description](#project-description)
@@ -64,22 +81,43 @@ This project is designed to extract sales data from various sources (including C
 
 
 ## File Structure
-```bash
-yourproject/
-│
-├── main/
-│   ├── data_extraction.py      # Main script for data extraction and validation
-│   ├── database_utils.py       # Database connection and operations
-│   └── validation.py           # Pydantic models for data validation
-│
-├── data/                       # Folder to store raw data files
-├── logs/                       # Logs of the application
-├── tests/                      # Unit tests for the project
-│
-├── README.md                   # Project README file
-├── requirements.txt            # Python dependencies
-└── .env                        # Environment variables
 
+```bash
+multinational-retail-data-centralisation312/
+├── db_creds.yaml
+├── __init__.py
+├── logging
+│   ├── DateModel
+│   │   ├── data_cleaning_errors.log
+│   │   └── data_cleaning_invalid_data.csv
+│   ├── OrderModel
+│   │   └── data_cleaning_errors.log
+│   ├── PaymentModel
+│   │   ├── data_cleaning_errors.log
+│   │   └── data_cleaning_invalid_data.csv
+│   ├── ProductModel
+│   │   ├── data_cleaning_errors.log
+│   │   └── data_cleaning_invalid_data.csv
+│   ├── StoreModel
+│   │   ├── data_cleaning_errors.log
+│   │   └── data_cleaning_invalid_data.csv
+│   └── UserModel
+│       ├── data_cleaning_errors.log
+│       └── data_cleaning_invalid_data.csv
+├── main
+│   ├── database_utils.py
+│   ├── data_cleaning.py
+│   ├── data_extraction.py
+│   └── __init__.py
+│ 
+├── README.md
+├── requirements.txt
+├── target_db_creds.yaml
+└── test
+    ├── __init__.py
+    ├── test_database_utils.py
+    ├── test_data_cleaning.py
+    └── test_data_extraction.py
 ```
 
 ## License
