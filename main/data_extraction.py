@@ -32,8 +32,8 @@ data_extractor = DataExtractor(connector=db_connector)
 df = data_extractor.read_rds_table('users')
 print(df.head())
 """
-import os
 
+import os
 
 
 import io
@@ -415,23 +415,14 @@ if __name__ == "__main__":
     de.model_class = OrderModel
     de.init_db_engine()
     de.df = de.read_rds_table("orders_table")
-    columns_to_remove = ['first_name', 'last_name', '1']
-    de.df.drop(columns=columns_to_remove, errors='ignore')
+    columns_to_remove = ["first_name", "last_name", "1"]
+    de.df.drop(columns=columns_to_remove, errors="ignore")
     print(de.df.head())
 
     # Process User data
     de.process_data()
     # upload order data to postgresql database
-    de.upload_to_db(de.valid_data, "orders_table")    
-
-
-
-
-
-
-
-
-
+    de.upload_to_db(de.valid_data, "orders_table")
 
     de.creds_path = "target_db_creds.yaml"
     de.read_db_creds(de.creds_path)
@@ -683,100 +674,100 @@ if __name__ == "__main__":
 #         # Commit the changes
 #         connection.commit()
 
-    # # Assuming you have an existing database engine instance
-    # update_dim_products(de.engine)
+# # Assuming you have an existing database engine instance
+# update_dim_products(de.engine)
 
-    # # def excute_sql(SQL):
-    # #     connection.execute(text(sql))
+# # def excute_sql(SQL):
+# #     connection.execute(text(sql))
 
-    # def update_dim_store_details(engine):
-    #     with engine.connect() as connection:
-    #         # Replace 'latitude' and 'lat' with the correct column names
-    #         merge_latitude_sql = """
-    #         UPDATE dim_store_details
-    #         SET latitude = COALESCE(latitude::FLOAT, lat::FLOAT);  -- Cast both columns to FLOAT
-    #         """
-    #         connection.execute(text(merge_latitude_sql))
+# def update_dim_store_details(engine):
+#     with engine.connect() as connection:
+#         # Replace 'latitude' and 'lat' with the correct column names
+#         merge_latitude_sql = """
+#         UPDATE dim_store_details
+#         SET latitude = COALESCE(latitude::FLOAT, lat::FLOAT);  -- Cast both columns to FLOAT
+#         """
+#         connection.execute(text(merge_latitude_sql))
 
-    #         # Drop the redundant latitude column (replace with actual column name)
-    #         drop_latitude_sql = """
-    #         ALTER TABLE dim_store_details DROP COLUMN lat;  -- Replace with actual column name
-    #         """
-    #         connection.execute(text(drop_latitude_sql))
+#         # Drop the redundant latitude column (replace with actual column name)
+#         drop_latitude_sql = """
+#         ALTER TABLE dim_store_details DROP COLUMN lat;  -- Replace with actual column name
+#         """
+#         connection.execute(text(drop_latitude_sql))
 
-    #         # Change data types of the columns
-    #         alter_table_sql = """
-    #         ALTER TABLE dim_store_details
-    #         ALTER COLUMN longitude SET DATA TYPE FLOAT USING longitude::FLOAT,
-    #         ALTER COLUMN locality SET DATA TYPE VARCHAR(255),
-    #         ALTER COLUMN store_code SET DATA TYPE VARCHAR(20),  -- Replace with your max length
-    #         ALTER COLUMN staff_numbers SET DATA TYPE SMALLINT USING staff_numbers::SMALLINT,
-    #         ALTER COLUMN opening_date SET DATA TYPE DATE USING opening_date::DATE,
-    #         ALTER COLUMN store_type SET DATA TYPE VARCHAR(255),
-    #         ALTER COLUMN latitude SET DATA TYPE FLOAT USING latitude::FLOAT,
-    #         ALTER COLUMN country_code SET DATA TYPE VARCHAR(5),  -- Replace with your max length
-    #         ALTER COLUMN continent SET DATA TYPE VARCHAR(255);
-    #         """
-    #         connection.execute(text(alter_table_sql))
+#         # Change data types of the columns
+#         alter_table_sql = """
+#         ALTER TABLE dim_store_details
+#         ALTER COLUMN longitude SET DATA TYPE FLOAT USING longitude::FLOAT,
+#         ALTER COLUMN locality SET DATA TYPE VARCHAR(255),
+#         ALTER COLUMN store_code SET DATA TYPE VARCHAR(20),  -- Replace with your max length
+#         ALTER COLUMN staff_numbers SET DATA TYPE SMALLINT USING staff_numbers::SMALLINT,
+#         ALTER COLUMN opening_date SET DATA TYPE DATE USING opening_date::DATE,
+#         ALTER COLUMN store_type SET DATA TYPE VARCHAR(255),
+#         ALTER COLUMN latitude SET DATA TYPE FLOAT USING latitude::FLOAT,
+#         ALTER COLUMN country_code SET DATA TYPE VARCHAR(5),  -- Replace with your max length
+#         ALTER COLUMN continent SET DATA TYPE VARCHAR(255);
+#         """
+#         connection.execute(text(alter_table_sql))
 
-    #         # Update location column to set 'N/A' values to NULL
-    #         update_location_sql = """
-    #         UPDATE dim_store_details
-    #         SET location = NULL
-    #         WHERE location = 'N/A';
-    #         """
-    #         connection.execute(text(update_location_sql))
+#         # Update location column to set 'N/A' values to NULL
+#         update_location_sql = """
+#         UPDATE dim_store_details
+#         SET location = NULL
+#         WHERE location = 'N/A';
+#         """
+#         connection.execute(text(update_location_sql))
 
-    #         # Commit changes
-    #         connection.commit()
+#         # Commit changes
+#         connection.commit()
 
-    #     print("Schema and data updates completed successfully.")
+#     print("Schema and data updates completed successfully.")
 
-    # # Assuming `engine` is your SQLAlchemy engine
-    # update_dim_store_details(de.engine)
+# # Assuming `engine` is your SQLAlchemy engine
+# update_dim_store_details(de.engine)
 
-    # def update_dim_store_details(engine):
-    #     with engine.connect() as connection:
-    #         # Merge latitude columns
-    #         merge_latitude_sql = """
-    #         UPDATE dim_store_details
-    #         SET latitude = COALESCE(latitude, lat);
-    #         """
-    #         connection.execute(text(merge_latitude_sql))
+# def update_dim_store_details(engine):
+#     with engine.connect() as connection:
+#         # Merge latitude columns
+#         merge_latitude_sql = """
+#         UPDATE dim_store_details
+#         SET latitude = COALESCE(latitude, lat);
+#         """
+#         connection.execute(text(merge_latitude_sql))
 
-    #         # Drop the redundant latitude column
-    #         drop_latitude_sql = """
-    #         ALTER TABLE dim_store_details DROP COLUMN latitude_column_2;
-    #         """
-    #         connection.execute(text(drop_latitude_sql))
+#         # Drop the redundant latitude column
+#         drop_latitude_sql = """
+#         ALTER TABLE dim_store_details DROP COLUMN latitude_column_2;
+#         """
+#         connection.execute(text(drop_latitude_sql))
 
-    #         # Change data types of the columns
-    #         alter_table_sql = """
-    #         ALTER TABLE dim_store_details
-    #         ALTER COLUMN longitude SET DATA TYPE FLOAT USING longitude::FLOAT,
-    #         ALTER COLUMN locality SET DATA TYPE VARCHAR(255),
-    #         ALTER COLUMN store_code SET DATA TYPE VARCHAR(20), -- Replace with your max length
-    #         ALTER COLUMN staff_numbers SET DATA TYPE SMALLINT USING staff_numbers::SMALLINT,
-    #         ALTER COLUMN opening_date SET DATA TYPE DATE USING opening_date::DATE,
-    #         ALTER COLUMN store_type SET DATA TYPE VARCHAR(255),
-    #         ALTER COLUMN latitude SET DATA TYPE FLOAT USING latitude::FLOAT,
-    #         ALTER COLUMN country_code SET DATA TYPE VARCHAR(5), -- Replace with your max length
-    #         ALTER COLUMN continent SET DATA TYPE VARCHAR(255);
-    #         """
-    #         connection.execute(text(alter_table_sql))
+#         # Change data types of the columns
+#         alter_table_sql = """
+#         ALTER TABLE dim_store_details
+#         ALTER COLUMN longitude SET DATA TYPE FLOAT USING longitude::FLOAT,
+#         ALTER COLUMN locality SET DATA TYPE VARCHAR(255),
+#         ALTER COLUMN store_code SET DATA TYPE VARCHAR(20), -- Replace with your max length
+#         ALTER COLUMN staff_numbers SET DATA TYPE SMALLINT USING staff_numbers::SMALLINT,
+#         ALTER COLUMN opening_date SET DATA TYPE DATE USING opening_date::DATE,
+#         ALTER COLUMN store_type SET DATA TYPE VARCHAR(255),
+#         ALTER COLUMN latitude SET DATA TYPE FLOAT USING latitude::FLOAT,
+#         ALTER COLUMN country_code SET DATA TYPE VARCHAR(5), -- Replace with your max length
+#         ALTER COLUMN continent SET DATA TYPE VARCHAR(255);
+#         """
+#         connection.execute(text(alter_table_sql))
 
-    #         # Update location column to set 'N/A' values to NULL
-    #         update_location_sql = """
-    #         UPDATE dim_store_details
-    #         SET location = NULL
-    #         WHERE location = 'N/A';
-    #         """
-    #         connection.execute(text(update_location_sql))
+#         # Update location column to set 'N/A' values to NULL
+#         update_location_sql = """
+#         UPDATE dim_store_details
+#         SET location = NULL
+#         WHERE location = 'N/A';
+#         """
+#         connection.execute(text(update_location_sql))
 
-    #         # Commit changes
-    #         connection.commit()
+#         # Commit changes
+#         connection.commit()
 
-    #     print("Schema and data updates completed successfully.")
+#     print("Schema and data updates completed successfully.")
 
-    # # Assuming `engine` is your SQLAlchemy engine
-    # update_dim_store_details(de.engine)
+# # Assuming `engine` is your SQLAlchemy engine
+# update_dim_store_details(de.engine)
