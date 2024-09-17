@@ -442,18 +442,18 @@ class ProductModel(BaseModel):
     @field_validator("uuid")
     def validate_uuid(cls, value):
         """
-        Validate the UUID to ensure it is exactly 16 digits.
+        Validate UUIDs to ensure they are valid UUID version 4 strings.
 
         Args:
-        - value: The UUID as a string or integer.
+        - value: The UUID string.
 
         Returns:
-        - str: The validated UUID if it is exactly 16 digits, otherwise raises a ValueError.
+        - UUID: The validated UUID if valid, otherwise raises a ValueError.
         """
-        value_str = str(value)  # Ensure value is treated as a string
-        if len(value_str) != 16 or not value_str.isdigit():
-            raise ValueError("Card number must be exactly 16 digits.")
-        return value_str
+        try:
+            return UUID(str(value))
+        except ValueError as e:
+            raise ValueError(f"Invalid UUID: {value}") from e
 
     @field_validator("removed")
     def validate_removed(cls, value):

@@ -32,11 +32,13 @@ data_extractor = DataExtractor(connector=db_connector)
 df = data_extractor.read_rds_table('users')
 print(df.head())
 """
+import os
+
+
 
 import io
 import json
 import numpy as np
-from io import StringIO
 from typing import List, Optional, Dict
 
 import requests
@@ -55,6 +57,15 @@ from sqlalchemy import (
     Float,
     SmallInteger,
 )
+from pathlib import Path
+
+# Get the current directory where this script is running
+repo_root = Path(__file__).resolve().parent
+
+# Set it as an environment variable
+os.environ["REPO_ROOT"] = str(repo_root)
+
+print(f"Root repository path: {repo_root}")
 
 from main.database_utils import DatabaseConnector
 from main.data_cleaning import (
@@ -399,6 +410,28 @@ if __name__ == "__main__":
     de.process_data()
     # upload order data to postgresql database
     de.upload_to_db(de.valid_data, "dim_date_times")
+
+    # 1.7 Extract CSV table from AWS S3.
+    de.model_class = OrderModel
+    de.init_db_engine()
+    de.df = de.read_rds_table("orders_table")
+    columns_to_remove = ['first_name', 'last_name', '1']
+    de.df.drop(columns=columns_to_remove, errors='ignore')
+    print(de.df.head())
+
+    # Process User data
+    de.process_data()
+    # upload order data to postgresql database
+    de.upload_to_db(de.valid_data, "orders_table")    
+
+
+
+
+
+
+
+
+
 
     de.creds_path = "target_db_creds.yaml"
     de.read_db_creds(de.creds_path)

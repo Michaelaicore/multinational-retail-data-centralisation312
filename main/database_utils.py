@@ -276,4 +276,4 @@ if __name__ == "__main__":
     # Assuming df is a DataFrame to be uploaded
 
     print(db_connector.tables)
-    print()
+
