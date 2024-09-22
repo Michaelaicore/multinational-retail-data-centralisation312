@@ -147,7 +147,7 @@ class TestProductModel(unittest.TestCase):
             category="Electronics",
             EAN="1234567890123",
             date_added="2023-06-01",
-            uuid="1234567890123456",
+            uuid="83dc0a69-f96f-4c34-bcb7-928acae19a94",
             removed="Still_avaliable",
             product_code="G123",
         )
