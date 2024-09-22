@@ -216,13 +216,13 @@ class DatabaseConnector:
         SQLAlchemyError
             If the upload fails after retries.
         """
-        target_creds = self.read_db_creds(self.target_creds_path)
+        self.target_creds = self.read_db_creds(self.target_creds_path)
 
         for attempt in range(retries):
             try:
                 if not self.target_engine:
                     self.target_engine = create_engine(
-                        f"postgresql://{target_creds['RDS_USER']}:{target_creds['RDS_PASSWORD']}@{target_creds['RDS_HOST']}:{target_creds['RDS_PORT']}/{target_creds['RDS_DATABASE']}"
+                        f"postgresql://{self.target_creds['RDS_USER']}:{self.target_creds['RDS_PASSWORD']}@{self.target_creds['RDS_HOST']}:{self.target_creds['RDS_PORT']}/{self.target_creds['RDS_DATABASE']}"
                     )
                     self.target_engine.connect()
 
@@ -276,3 +276,4 @@ if __name__ == "__main__":
     # Assuming df is a DataFrame to be uploaded
 
     print(db_connector.tables)
+    print()

@@ -216,6 +216,11 @@ class PaymentModel(BaseModel):
         # Clean the card number by removing non-digit characters
         return re.sub(r"\D", "", value)
 
+        # value = re.sub(r'\D', '', value).lstrip('?')
+        # if not value.isdigit() or not (9 <= len(value) <= 19):
+        #     raise ValueError("Card number must contain only digits and be between 13 and 19 digits.")
+        # return str(value)
+
     @field_validator("date_payment_confirmed", mode="before")
     def validate_and_clean_date_payment(cls, value):
         """
@@ -348,7 +353,7 @@ class ProductModel(BaseModel):
     category: str
     EAN: str
     date_added: str
-    uuid: str
+    uuid: UUID
     removed: str
     product_code: str
 
@@ -437,13 +442,13 @@ class ProductModel(BaseModel):
     @field_validator("uuid")
     def validate_uuid(cls, value):
         """
-        Validate UUIDs to ensure they are valid UUID version 4 strings.
+        Validate the UUID to ensure it is a valid UUID.
 
         Args:
         - value: The UUID string.
 
         Returns:
-        - UUID: The validated UUID if valid, otherwise raises a ValueError.
+        - UUID: The validated UUID, otherwise raises a ValueError.
         """
         try:
             return UUID(str(value))
@@ -653,6 +658,8 @@ class DataCleaning:
         self.invalid_data = None
         self.invalid_errors = None
         self.model_class = model_class
+        # self.project_name = project_name
+        # self.module_name = module_name
         self.class_name = class_name
         self.logger = self._setup_logger()
 

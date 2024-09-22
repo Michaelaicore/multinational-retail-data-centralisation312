@@ -33,15 +33,14 @@ df = data_extractor.read_rds_table('users')
 print(df.head())
 """
 
-import os
 import io
 import json
-from pathlib import Path
+import numpy as np
+from io import StringIO
 from typing import List, Optional, Dict
 
 import requests
 import boto3
-import numpy as np
 import pandas as pd
 import jpype
 import tabula
@@ -57,15 +56,6 @@ from sqlalchemy import (
     SmallInteger,
 )
 
-# Get the current directory where this script is running
-repo_root = Path(__file__).resolve().parent
-
-# Set it as an environment variable
-os.environ["REPO_ROOT"] = str(repo_root)
-
-print(f"Root repository path: {repo_root}")
-
-# Local imports
 from main.database_utils import DatabaseConnector
 from main.data_cleaning import (
     DataCleaning,
@@ -348,425 +338,77 @@ if __name__ == "__main__":
     # 1.1 Initialize DataExtractor
     de = DataExtractor()
 
-    # 1.2 Extract User Data from AWS RDS database
-    # Assign model class
-    de.model_class = UserModel
-    # Extract user data
-    de.read_rds_table("legacy_users")
-    print(de.df.info)
-    # Process User data
-    de.process_data()
-    # upload User data to postgresql database
-    de.upload_to_db(de.valid_data, "dim_users")
+    # # 1.2 Extract User Data from AWS RDS database
+    # # Assign model class
+    # de.model_class = UserModel
+    # # Extract user data
+    # de.read_rds_table("legacy_users")
+    # print(de.df.info)
+    # # Process User data
+    # de.process_data()
+    # # upload User data to postgresql database
+    # de.upload_to_db(de.valid_data, "dim_users")
 
-    # 1.3 Extract and process card data
-    # Assign model class
-    de.model_class = PaymentModel
-    link = "https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf"
-    # Extract payment card data from AWS S3 as pdf file
-    de.retrieve_pdf_data(link)
-    print(de.df.head())
-    # Process User data
-    de.process_data()
-    # upload card data to postgresql database
-    de.upload_to_db(de.valid_data, "dim_card_details")
+    # # 1.3 Extract and process card data
+    # # Assign model class
+    # de.model_class = PaymentModel
+    # link = de.target_creds["card_details_link"]
+    # # Extract payment card data from AWS S3 as pdf file
+    # de.retrieve_pdf_data(link)
+    # print(de.df.head())
+    # # Process User data
+    # de.process_data()
+    # # upload card data to postgresql database
+    # de.upload_to_db(de.valid_data, "dim_card_details")
 
-    # 1.4 Extract store data by using API
-    # Assign headers and API endpoints to extract data
-    headers = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"}
-    number_of_stores_endpoint = (
-        "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores"
-    )
-    store_details_endpoint = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/{store_number}"
-    number_of_stores = de.list_number_of_stores(number_of_stores_endpoint, headers)
-    print("total store numbers is: ", number_of_stores)
-    # Assign model class
-    de.model_class = StoreModel
-    # Extract data
-    de.retrieve_stores_data(store_details_endpoint, headers, number_of_stores)
-    print(de.df.info())
-    print(de.df.head())
-    de.process_data()
-    de.upload_to_db(de.valid_data, "dim_store_details")
+    # # 1.4 Extract store data by using API
+    # # Assign headers and API endpoints to extract data
+    # headers = de.target_creds["header"]
+    # number_of_stores_endpoint = de.target_creds["number_of_stores_endpoint"]
+    # store_details_endpoint = de.target_creds["store_details_endpoint"]
+    # number_of_stores = de.list_number_of_stores(number_of_stores_endpoint, headers)
+    # print("total store numbers is: ", number_of_stores)
+    # # Assign model class
+    # de.model_class = StoreModel
+    # # Extract data
+    # de.retrieve_stores_data(store_details_endpoint, headers, number_of_stores)
+    # print(de.df.info())
+    # print(de.df.head())
+    # de.process_data()
+    # de.upload_to_db(de.valid_data, "dim_store_details")
+
+    de.target_creds = de.read_db_creds(de.target_creds_path)
 
     # 1.5 Extract CSV product data from AWS S3
     # presume AWS CLI installed and configured
     de.model_class = ProductModel
-    de.extract_from_s3("s3://data-handling-public/products.csv")
+    de.extract_from_s3(de.target_creds["product_table_link"])
     de.df.drop(columns=["Unnamed: 0"], errors="ignore")
     print(de.df.info())
     de.process_data()
     de.upload_to_db(de.valid_data, "dim_products")
 
-    # 1.6 Extract json date_data from AWS s3
-    # Assign model class
-    de.model_class = DateModel
-    # Extract user data
-    link = "https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json"
-    de.extract_json_from_S3(link)
-    print(de.df.head())
-    # Process User data
-    de.process_data()
-    # upload order data to postgresql database
-    de.upload_to_db(de.valid_data, "dim_date_times")
+    # # 1.6 Extract json date_data from AWS s3
+    # # Assign model class
+    # de.model_class = DateModel
+    # # Extract user data
+    # link = de.target_creds["date_model_link"]
+    # de.extract_json_from_S3(link)
+    # print(de.df.head())
+    # # Process User data
+    # de.process_data()
+    # # upload order data to postgresql database
+    # de.upload_to_db(de.valid_data, "dim_date_times")
 
-    # 1.7 Extract CSV table from AWS S3.
-    de.model_class = OrderModel
-    de.init_db_engine()
-    de.df = de.read_rds_table("orders_table")
-    columns_to_remove = ["first_name", "last_name", "1"]
-    de.df.drop(columns=columns_to_remove, errors="ignore")
-    print(de.df.head())
+    # # 1.7 Extract CSV table from AWS S3.
+    # de.model_class = OrderModel
+    # de.init_db_engine()
+    # de.df = de.read_rds_table("orders_table")
+    # columns_to_remove = ["first_name", "last_name", "1"]
+    # de.df.drop(columns=columns_to_remove, errors="ignore")
+    # print(de.df.head())
 
-    # Process User data
-    de.process_data()
-    # upload order data to postgresql database
-    de.upload_to_db(de.valid_data, "orders_table")
-
-    de.creds_path = "target_db_creds.yaml"
-    de.read_db_creds(de.creds_path)
-    de.init_db_engine()
-
-    # Connect to the database
-
-    # Start a transaction
-
-    # Execute SQL commands to alter the schema
-
-    # Change `date_uuid` and `user_uuid` to UUID
-    # Assuming the connection to the database is already established
-
-    # with de.engine.connect() as connection:
-    #     connection.execute(text("BEGIN;"))
-
-    #     # Your ALTER TABLE commands here
-
-    #     connection.execute(text("COMMIT;"))
-
-    # import logging
-    # # Setup logging
-    # logging.basicConfig()
-    # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
-
-    # try:
-    #     with de.engine.connect() as connection:
-    #         with connection.begin():
-    #             # Check current column types
-    #             result = connection.execute(text("""
-    #                 SELECT column_name, data_type
-    #                 FROM information_schema.columns
-    #                 WHERE table_name = 'orders_table'
-    #                 AND column_name IN ('user_uuid', 'date_uuid');
-    #             """))
-
-    #             current_schema = {}
-    #             for row in result:
-    #                 column_name = row[0]
-    #                 data_type = row[1]
-    #                 current_schema[column_name] = data_type
-
-    #             # Define desired schema changes
-    #             desired_schema = {
-    #                 'user_uuid': 'UUID',
-    #                 'date_uuid': 'UUID'
-    #             }
-
-    #             # Compare and apply schema changes if necessary
-    #             alter_statements = []
-    #             for column, desired_type in desired_schema.items():
-    #                 current_type = current_schema.get(column)
-    #                 if current_type != desired_type:
-    #                     alter_statements.append(
-    #                         f"ALTER COLUMN {column} SET DATA TYPE {desired_type} USING {column}::{desired_type}"
-    #                     )
-
-    #             if alter_statements:
-    #                 connection.execute(text(f"""
-    #                     ALTER TABLE orders_table
-    #                     {', '.join(alter_statements)};
-    #                 """))
-    #                 print("Remaining schema updates applied and committed successfully.")
-    #             else:
-    #                 print("No additional schema changes needed.")
-
-    # except Exception as e:
-    #     print(f"An error occurred: {e}")
-
-    # try:
-    #     with de.engine.connect() as connection:
-    #         with connection.begin():
-    #             # Get the maximum length of country_code
-    #             result = connection.execute(text("""
-    #                 SELECT MAX(LENGTH(country_code)) AS max_country_code_length
-    #                 FROM dim_users;
-    #             """))
-    #             max_length = result.fetchone()[0] or 0
-
-    #             # Define desired schema changes
-    #             alter_statements = [
-    #                 "ALTER COLUMN first_name SET DATA TYPE VARCHAR(255)",
-    #                 "ALTER COLUMN last_name SET DATA TYPE VARCHAR(255)",
-    #                 "ALTER COLUMN date_of_birth SET DATA TYPE DATE USING date_of_birth::DATE",
-    #                 f"ALTER COLUMN country_code SET DATA TYPE VARCHAR({max_length})",
-    #                 "ALTER COLUMN user_uuid SET DATA TYPE UUID USING user_uuid::UUID",
-    #                 "ALTER COLUMN join_date SET DATA TYPE DATE USING join_date::DATE"
-    #             ]
-
-    #             # Apply the schema changes
-    #             connection.execute(text(f"""
-    #                 ALTER TABLE dim_users
-    #                 {', '.join(alter_statements)};
-    #             """))
-    #             print("Schema updates applied and committed successfully.")
-
-    # except Exception as e:
-    #     print(f"An error occurred: {e}")
-
-    # def update_dim_store_details(engine):
-    #     with engine.connect() as connection:
-    #         # Replace 'latitude' and 'lat' with the correct column names
-    #         merge_latitude_sql = """
-    #         UPDATE dim_store_details
-    #         SET latitude = COALESCE(latitude::FLOAT, lat::FLOAT);  -- Cast both columns to FLOAT
-    #         """
-    #         connection.execute(text(merge_latitude_sql))
-
-    #         # Drop the redundant latitude column (replace with actual column name)
-    #         drop_latitude_sql = """
-    #         ALTER TABLE dim_store_details DROP COLUMN lat;  -- Replace with actual column name
-    #         """
-    #         connection.execute(text(drop_latitude_sql))
-
-    #         # Change data types of the columns
-    #         alter_table_sql = """
-    #         ALTER TABLE dim_store_details
-    #         ALTER COLUMN longitude SET DATA TYPE FLOAT USING longitude::FLOAT,
-    #         ALTER COLUMN locality SET DATA TYPE VARCHAR(255),
-    #         ALTER COLUMN store_code SET DATA TYPE VARCHAR(20),  -- Replace with your max length
-    #         ALTER COLUMN staff_numbers SET DATA TYPE SMALLINT USING staff_numbers::SMALLINT,
-    #         ALTER COLUMN opening_date SET DATA TYPE DATE USING opening_date::DATE,
-    #         ALTER COLUMN store_type SET DATA TYPE VARCHAR(255),
-    #         ALTER COLUMN latitude SET DATA TYPE FLOAT USING latitude::FLOAT,
-    #         ALTER COLUMN country_code SET DATA TYPE VARCHAR(5),  -- Replace with your max length
-    #         ALTER COLUMN continent SET DATA TYPE VARCHAR(255);
-    #         """
-    #         connection.execute(text(alter_table_sql))
-
-    #         # Update location column to set 'N/A' values to NULL
-    #         update_location_sql = """
-    #         UPDATE dim_store_details
-    #         SET locality = NULL
-    #         WHERE locality = 'N/A';
-    #         """
-    #         connection.execute(text(update_location_sql))
-
-    #         # Commit changes
-    #         connection.commit()
-
-    #     print("Schema and data updates completed successfully.")
-
-    # # Assuming `engine` is your SQLAlchemy engine
-    # update_dim_store_details(de.engine)
-
-    # def update_dim_products(engine):
-    #     with engine.connect() as connection:
-    #         # Step 1: Convert product_price to text, remove the £ character, then convert it back to numeric
-    #         remove_currency_and_convert_sql = """
-    #         -- Convert product_price to text, remove £ symbol, and convert back to numeric
-    #         UPDATE dim_products
-    #         SET product_price = CAST(REPLACE(CAST(product_price AS TEXT), '£', '') AS NUMERIC);
-    #         """
-    #         connection.execute(text(remove_currency_and_convert_sql))
-
-    #         # Step 2: Add weight_class column if it doesn't exist
-    #         add_weight_class_column_sql = """
-    #         ALTER TABLE dim_products
-    #         ADD COLUMN IF NOT EXISTS weight_class VARCHAR(20);
-    #         """
-    #         connection.execute(text(add_weight_class_column_sql))
-
-    #         # Step 3: Update the weight_class column based on the weight range
-    #         update_weight_class_sql = """
-    #         UPDATE dim_products
-    #         SET weight_class = CASE
-    #             WHEN weight < 2 THEN 'Light'
-    #             WHEN weight >= 2 AND weight < 40 THEN 'Mid_Sized'
-    #             WHEN weight >= 40 AND weight < 140 THEN 'Heavy'
-    #             WHEN weight >= 140 THEN 'Truck_Required'
-    #         END;
-    #         """
-    #         connection.execute(text(update_weight_class_sql))
-
-    #         # Commit the changes
-    #         connection.commit()
-
-    # # Assuming you have an existing database engine instance
-    # update_dim_products(de.engine)
-
-
-# def update_dim_products(engine):
-#     with de.engine.connect() as connection:
-#         # Step 1: Rename the removed column to still_available
-#         rename_column_sql = """
-#         ALTER TABLE dim_products
-#         RENAME COLUMN removed TO still_available;
-#         """
-#         connection.execute(text(rename_column_sql))
-
-#         # Step 2: Convert columns to their required data types
-#         # Convert product_price to FLOAT
-#         convert_product_price_sql = """
-#         ALTER TABLE dim_products
-#         ALTER COLUMN product_price TYPE FLOAT USING product_price::FLOAT;
-#         """
-#         connection.execute(text(convert_product_price_sql))
-
-#         # Convert weight to FLOAT
-#         convert_weight_sql = """
-#         ALTER TABLE dim_products
-#         ALTER COLUMN weight TYPE FLOAT USING weight::FLOAT;
-#         """
-#         connection.execute(text(convert_weight_sql))
-
-#         # Convert EAN to VARCHAR(13) (assuming 13 is the maximum length required)
-#         convert_EAN_sql = """
-#         ALTER TABLE dim_products
-#         ALTER COLUMN EAN TYPE VARCHAR(13);
-#         """
-#         connection.execute(text(convert_EAN_sql))
-
-#         # Convert product_code to VARCHAR(11) (assuming 11 is the maximum length required)
-#         convert_product_code_sql = """
-#         ALTER TABLE dim_products
-#         ALTER COLUMN product_code TYPE VARCHAR(11);
-#         """
-#         connection.execute(text(convert_product_code_sql))
-
-#         # Convert date_added to DATE
-#         convert_date_added_sql = """
-#         ALTER TABLE dim_products
-#         ALTER COLUMN date_added TYPE DATE USING date_added::DATE;
-#         """
-#         connection.execute(text(convert_date_added_sql))
-
-#         # Convert uuid to UUID
-#         convert_uuid_sql = """
-#         ALTER TABLE dim_products
-#         ALTER COLUMN uuid TYPE UUID USING uuid::UUID;
-#         """
-#         connection.execute(text(convert_uuid_sql))
-
-#         # Convert still_available to BOOL
-#         convert_still_available_sql = """
-#         ALTER TABLE dim_products
-#         ALTER COLUMN still_available TYPE BOOL USING still_available::BOOL;
-#         """
-#         connection.execute(text(convert_still_available_sql))
-
-#         # Convert weight_class to VARCHAR(20) (assuming 20 is the maximum length required)
-#         convert_weight_class_sql = """
-#         ALTER TABLE dim_products
-#         ALTER COLUMN weight_class TYPE VARCHAR(20);
-#         """
-#         connection.execute(text(convert_weight_class_sql))
-
-#         # Commit the changes
-#         connection.commit()
-
-# # Assuming you have an existing database engine instance
-# update_dim_products(de.engine)
-
-# # def excute_sql(SQL):
-# #     connection.execute(text(sql))
-
-# def update_dim_store_details(engine):
-#     with engine.connect() as connection:
-#         # Replace 'latitude' and 'lat' with the correct column names
-#         merge_latitude_sql = """
-#         UPDATE dim_store_details
-#         SET latitude = COALESCE(latitude::FLOAT, lat::FLOAT);  -- Cast both columns to FLOAT
-#         """
-#         connection.execute(text(merge_latitude_sql))
-
-#         # Drop the redundant latitude column (replace with actual column name)
-#         drop_latitude_sql = """
-#         ALTER TABLE dim_store_details DROP COLUMN lat;  -- Replace with actual column name
-#         """
-#         connection.execute(text(drop_latitude_sql))
-
-#         # Change data types of the columns
-#         alter_table_sql = """
-#         ALTER TABLE dim_store_details
-#         ALTER COLUMN longitude SET DATA TYPE FLOAT USING longitude::FLOAT,
-#         ALTER COLUMN locality SET DATA TYPE VARCHAR(255),
-#         ALTER COLUMN store_code SET DATA TYPE VARCHAR(20),  -- Replace with your max length
-#         ALTER COLUMN staff_numbers SET DATA TYPE SMALLINT USING staff_numbers::SMALLINT,
-#         ALTER COLUMN opening_date SET DATA TYPE DATE USING opening_date::DATE,
-#         ALTER COLUMN store_type SET DATA TYPE VARCHAR(255),
-#         ALTER COLUMN latitude SET DATA TYPE FLOAT USING latitude::FLOAT,
-#         ALTER COLUMN country_code SET DATA TYPE VARCHAR(5),  -- Replace with your max length
-#         ALTER COLUMN continent SET DATA TYPE VARCHAR(255);
-#         """
-#         connection.execute(text(alter_table_sql))
-
-#         # Update location column to set 'N/A' values to NULL
-#         update_location_sql = """
-#         UPDATE dim_store_details
-#         SET location = NULL
-#         WHERE location = 'N/A';
-#         """
-#         connection.execute(text(update_location_sql))
-
-#         # Commit changes
-#         connection.commit()
-
-#     print("Schema and data updates completed successfully.")
-
-# # Assuming `engine` is your SQLAlchemy engine
-# update_dim_store_details(de.engine)
-
-# def update_dim_store_details(engine):
-#     with engine.connect() as connection:
-#         # Merge latitude columns
-#         merge_latitude_sql = """
-#         UPDATE dim_store_details
-#         SET latitude = COALESCE(latitude, lat);
-#         """
-#         connection.execute(text(merge_latitude_sql))
-
-#         # Drop the redundant latitude column
-#         drop_latitude_sql = """
-#         ALTER TABLE dim_store_details DROP COLUMN latitude_column_2;
-#         """
-#         connection.execute(text(drop_latitude_sql))
-
-#         # Change data types of the columns
-#         alter_table_sql = """
-#         ALTER TABLE dim_store_details
-#         ALTER COLUMN longitude SET DATA TYPE FLOAT USING longitude::FLOAT,
-#         ALTER COLUMN locality SET DATA TYPE VARCHAR(255),
-#         ALTER COLUMN store_code SET DATA TYPE VARCHAR(20), -- Replace with your max length
-#         ALTER COLUMN staff_numbers SET DATA TYPE SMALLINT USING staff_numbers::SMALLINT,
-#         ALTER COLUMN opening_date SET DATA TYPE DATE USING opening_date::DATE,
-#         ALTER COLUMN store_type SET DATA TYPE VARCHAR(255),
-#         ALTER COLUMN latitude SET DATA TYPE FLOAT USING latitude::FLOAT,
-#         ALTER COLUMN country_code SET DATA TYPE VARCHAR(5), -- Replace with your max length
-#         ALTER COLUMN continent SET DATA TYPE VARCHAR(255);
-#         """
-#         connection.execute(text(alter_table_sql))
-
-#         # Update location column to set 'N/A' values to NULL
-#         update_location_sql = """
-#         UPDATE dim_store_details
-#         SET location = NULL
-#         WHERE location = 'N/A';
-#         """
-#         connection.execute(text(update_location_sql))
-
-#         # Commit changes
-#         connection.commit()
-
-#     print("Schema and data updates completed successfully.")
-
-# # Assuming `engine` is your SQLAlchemy engine
-# update_dim_store_details(de.engine)
+    # # Process User data
+    # de.process_data()
+    # # upload order data to postgresql database
+    # de.upload_to_db(de.valid_data, "orders_table")

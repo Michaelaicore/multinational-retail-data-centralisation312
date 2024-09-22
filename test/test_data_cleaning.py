@@ -147,7 +147,7 @@ class TestProductModel(unittest.TestCase):
             category="Electronics",
             EAN="1234567890123",
             date_added="2023-06-01",
-            uuid="9476f17e-5d6a-4117-874d-9cdb38ca1fa6",
+            uuid="1234567890123456",
             removed="Still_avaliable",
             product_code="G123",
         )
@@ -163,7 +163,7 @@ class TestProductModel(unittest.TestCase):
                 category="Electronics",
                 EAN="ABC123",  # Invalid EAN
                 date_added="2023-06-01",
-                uuid="1234567890123456",  # Invalid uuid
+                uuid="1234567890123456",
                 removed="Still_avaliable",
                 product_code="G123",
             )
