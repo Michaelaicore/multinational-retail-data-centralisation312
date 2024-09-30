@@ -74,6 +74,7 @@ You can view the CI status and logs [here](https://github.com/Michaelaicore/mult
 
 ## Installation
 1. Clone the repository:
+
         ```bash
         git clone https://github.com/Michaelaicore/multinational-retail-data-centralisation312.git
         cd multinational-retail-data-centralisation312
