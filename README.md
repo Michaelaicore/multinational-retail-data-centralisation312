@@ -104,6 +104,12 @@ You can view the CI status and logs [here](https://github.com/Michaelaicore/mult
 
     5.1 ***Create a database named sales_data***
 
+        ```bash
+        sudo -u postgres psql
+        CREATE DATABASE sales_data;
+
+        ```
+
     5.2 ***Create original and target(local) database access credentials***
 
         . Source database credential in yaml file, db_creds.yaml, in root directory in project as following format:
