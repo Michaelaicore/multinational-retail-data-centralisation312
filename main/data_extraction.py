@@ -38,6 +38,7 @@ import json
 import numpy as np
 from io import StringIO
 from typing import List, Optional, Dict
+import time
 
 import requests
 import boto3
@@ -80,6 +81,9 @@ class DataExtractor(DatabaseConnector, DataCleaning):
     DataCleaning
         Provides data validation and cleaning functionality.
     """
+
+    MAX_RETRIES = 3  # Maximum number of retries
+    RETRY_DELAY = 2  # Delay between retries (in seconds)
 
     def __init__(
         self, model_class: Optional[object] = UserModel, class_name="data_cleaning"
@@ -197,13 +201,19 @@ class DataExtractor(DatabaseConnector, DataCleaning):
         requests.RequestException
             If the API request fails.
         """
-        try:
-            response = requests.get(endpoint, headers=headers)
-            response.raise_for_status()
-            return response.json().get("number_stores", 0)
-        except requests.RequestException as e:
-            self.logger.error(f"Failed to retrieve the number of stores: {e}")
-            raise
+        for attempt in range(1, self.MAX_RETRIES + 1):
+            try:
+                response = requests.get(endpoint, headers=headers)
+                response.raise_for_status()
+                return response.json().get("number_stores", 0)
+            except requests.RequestException as e:
+                self.logger.error(
+                    f"Attempt {attempt} failed to retrieve the number of stores: {e}"
+                )
+                if attempt < self.MAX_RETRIES:
+                    time.sleep(self.RETRY_DELAY)  # Wait before retrying
+                else:
+                    raise
 
     def retrieve_stores_data(
         self, endpoint: str, headers: Dict[str, str], num_stores: int
@@ -231,17 +241,27 @@ class DataExtractor(DatabaseConnector, DataCleaning):
             If the API request fails.
         """
         stores_df = []
-        for store_index in range(1, num_stores + 1):
+        for store_index in range(0, num_stores):
             url = endpoint.format(store_number=store_index)
-            try:
-                response = requests.get(url, headers=headers)
-                response.raise_for_status()
-                stores_df.append(response.json())
-                # self.df = pd.DataFrame(stores_df)
-            except requests.RequestException as e:
-                self.logger.error(
-                    f"Failed to retrieve data for store number {store_index}: {e}"
-                )
+            for attempt in range(
+                1, self.MAX_RETRIES + 1
+            ):  # if failed, we allow to have another two attempts
+                try:
+                    response = requests.get(url, headers=headers)
+                    response.raise_for_status()
+                    stores_df.append(response.json())
+                    break  # Exit retry loop if successful
+                except requests.RequestException as e:
+                    self.logger.error(
+                        f"Attempt {attempt} failed for store number {store_index}: {e}"
+                    )
+                    if attempt < 3:
+                        time.sleep(self.RETRY_DELAY2)  # Wait 2 secs before retrying
+                    else:
+                        self.logger.error(
+                            f"Failed to retrieve data for store number {store_index} after 3 attempts."
+                        )
+
         self.df = pd.DataFrame(stores_df)
         return self.df
 
@@ -338,44 +358,46 @@ if __name__ == "__main__":
     # 1.1 Initialize DataExtractor
     de = DataExtractor()
 
-    # # 1.2 Extract User Data from AWS RDS database
-    # # Assign model class
-    # de.model_class = UserModel
-    # # Extract user data
-    # de.read_rds_table("legacy_users")
-    # print(de.df.info)
-    # # Process User data
-    # de.process_data()
-    # # upload User data to postgresql database
-    # de.upload_to_db(de.valid_data, "dim_users")
+    # 1.2 Extract User Data from AWS RDS database
+    # Assign model class
+    de.model_class = UserModel
+    # Extract user data
+    de.read_rds_table("legacy_users")
+    print(de.df.info)
+    # Process User data
+    de.process_data()
+    # load User data to postgresql database
+    de.upload_to_db(de.valid_data, "dim_users")
 
-    # # 1.3 Extract and process card data
-    # # Assign model class
-    # de.model_class = PaymentModel
-    # link = de.target_creds["card_details_link"]
-    # # Extract payment card data from AWS S3 as pdf file
-    # de.retrieve_pdf_data(link)
-    # print(de.df.head())
-    # # Process User data
-    # de.process_data()
-    # # upload card data to postgresql database
-    # de.upload_to_db(de.valid_data, "dim_card_details")
+    de.target_creds = de.read_db_creds(de.target_creds_path)
 
-    # # 1.4 Extract store data by using API
-    # # Assign headers and API endpoints to extract data
-    # headers = de.target_creds["header"]
-    # number_of_stores_endpoint = de.target_creds["number_of_stores_endpoint"]
-    # store_details_endpoint = de.target_creds["store_details_endpoint"]
-    # number_of_stores = de.list_number_of_stores(number_of_stores_endpoint, headers)
-    # print("total store numbers is: ", number_of_stores)
-    # # Assign model class
-    # de.model_class = StoreModel
-    # # Extract data
-    # de.retrieve_stores_data(store_details_endpoint, headers, number_of_stores)
-    # print(de.df.info())
-    # print(de.df.head())
-    # de.process_data()
-    # de.upload_to_db(de.valid_data, "dim_store_details")
+    # 1.3 Extract and process card data
+    # Assign model class
+    de.model_class = PaymentModel
+    link = de.target_creds["card_details_link"]
+    # Extract payment card data from AWS S3 as pdf file
+    de.retrieve_pdf_data(link)
+    print(de.df.head())
+    # Process card data
+    de.process_data()
+    # upload card data to postgresql database
+    de.upload_to_db(de.valid_data, "dim_card_details")
+
+    # 1.4 Extract store data by using API
+    # Assign headers and API endpoints to extract data
+    headers = de.target_creds["header"]
+    number_of_stores_endpoint = de.target_creds["number_of_stores_endpoint"]
+    store_details_endpoint = de.target_creds["store_details_endpoint"]
+    number_of_stores = de.list_number_of_stores(number_of_stores_endpoint, headers)
+    print("total store numbers is: ", number_of_stores)
+    # Assign model class
+    de.model_class = StoreModel
+    # Extract data
+    de.retrieve_stores_data(store_details_endpoint, headers, number_of_stores)
+    print(de.df.info())
+    print(de.df.head())
+    de.process_data()
+    de.upload_to_db(de.valid_data, "dim_store_details")
 
     de.target_creds = de.read_db_creds(de.target_creds_path)
 
@@ -388,27 +410,26 @@ if __name__ == "__main__":
     de.process_data()
     de.upload_to_db(de.valid_data, "dim_products")
 
-    # # 1.6 Extract json date_data from AWS s3
-    # # Assign model class
-    # de.model_class = DateModel
-    # # Extract user data
-    # link = de.target_creds["date_model_link"]
-    # de.extract_json_from_S3(link)
-    # print(de.df.head())
-    # # Process User data
-    # de.process_data()
-    # # upload order data to postgresql database
-    # de.upload_to_db(de.valid_data, "dim_date_times")
+    # 1.6 Extract json date_data from AWS s3
+    # Assign model class
+    de.model_class = DateModel
+    # Extract user data
+    link = de.target_creds["date_model_link"]
+    de.extract_json_from_S3(link)
+    print(de.df.head())
+    # Process date data
+    de.process_data()
+    # upload order data to postgresql database
+    de.upload_to_db(de.valid_data, "dim_date_times")
 
-    # # 1.7 Extract CSV table from AWS S3.
-    # de.model_class = OrderModel
-    # de.init_db_engine()
-    # de.df = de.read_rds_table("orders_table")
-    # columns_to_remove = ["first_name", "last_name", "1"]
-    # de.df.drop(columns=columns_to_remove, errors="ignore")
-    # print(de.df.head())
-
-    # # Process User data
-    # de.process_data()
-    # # upload order data to postgresql database
-    # de.upload_to_db(de.valid_data, "orders_table")
+    # 1.7 Extract CSV table from AWS S3.
+    de.model_class = OrderModel
+    de.init_db_engine()
+    de.df = de.read_rds_table("orders_table")
+    columns_to_remove = ["first_name", "last_name", "1"]
+    de.df.drop(columns=columns_to_remove, errors="ignore")
+    print(de.df.head())
+    # Process order data
+    de.process_data()
+    # upload order data to postgresql database
+    de.upload_to_db(de.valid_data, "orders_table")

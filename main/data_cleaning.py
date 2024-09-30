@@ -24,13 +24,12 @@ import json
 import os
 import logging
 import re
-import uuid
+from uuid import UUID
 from datetime import date
 
 from dateutil import parser
 import pandas as pd
 from typing import Optional, Literal
-from uuid import UUID
 
 from pydantic import (
     BaseModel,
@@ -80,7 +79,7 @@ class UserModel(BaseModel):
     country_code: constr(min_length=2, max_length=2)
     phone_number: str
     join_date: date
-    user_uuid: uuid.UUID
+    user_uuid: UUID
 
     @field_validator("date_of_birth", "join_date", mode="before")
     def parse_dates(cls, value):
@@ -216,11 +215,6 @@ class PaymentModel(BaseModel):
         # Clean the card number by removing non-digit characters
         return re.sub(r"\D", "", value)
 
-        # value = re.sub(r'\D', '', value).lstrip('?')
-        # if not value.isdigit() or not (9 <= len(value) <= 19):
-        #     raise ValueError("Card number must contain only digits and be between 13 and 19 digits.")
-        # return str(value)
-
     @field_validator("date_payment_confirmed", mode="before")
     def validate_and_clean_date_payment(cls, value):
         """
@@ -265,7 +259,7 @@ class StoreModel(BaseModel):
         - validate_staff_numbers: Validates and cleans the staff numbers.
     """
 
-    index: conint(ge=1)  # Integer, greater than or equal to 1
+    index: conint(ge=0)  # Integer, greater than or equal to 1
     address: str  # String, required
     longitude: Optional[float]  # Optional float for longitude
     lat: Optional[object]
@@ -319,7 +313,6 @@ class StoreModel(BaseModel):
 
     class Config:
         # Allow field aliases to be used when populating the model
-        populate_by_name = True
         str_strip_whitespace = True
 
 
@@ -472,7 +465,6 @@ class ProductModel(BaseModel):
 
     class Config:
         # Allow field aliases to be used when populating the model
-        populate_by_name = True
         str_strip_whitespace = True
 
 
@@ -517,7 +509,7 @@ class OrderModel(BaseModel):
         - str: The cleaned card number as a string if it meets the length requirement, otherwise raises a ValueError.
         """
         value_str = str(value)
-        if not (9 <= len(value_str) <= 19):
+        if not (9 <= len(value_str) <= 21):
             raise ValueError("Card number must be between 9 and 16 digits.")
         return value_str
 
@@ -554,7 +546,6 @@ class OrderModel(BaseModel):
 
     class Config:
         # Allow field aliases to be used when populating the model
-        populate_by_name = True
         str_strip_whitespace = True
 
 
@@ -580,7 +571,7 @@ class DateModel(BaseModel):
     year: conint(ge=1900, le=2100)  # Valid year range
     day: conint(ge=1, le=31)  # Ensuring day is between 1 and 31
     time_period: Literal["Morning", "Midday", "Evening", "Late_Hours"]
-    date_uuid: uuid.UUID
+    date_uuid: UUID
 
     @classmethod
     def validate_timestamp(cls, value: str) -> str:
@@ -658,8 +649,6 @@ class DataCleaning:
         self.invalid_data = None
         self.invalid_errors = None
         self.model_class = model_class
-        # self.project_name = project_name
-        # self.module_name = module_name
         self.class_name = class_name
         self.logger = self._setup_logger()
 

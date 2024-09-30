@@ -1,5 +1,5 @@
 
-name: Python application
+name: DATABASE MIGRATION
 
 on: [push, pull_request]
 

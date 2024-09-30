@@ -1,7 +1,6 @@
 import unittest
 import pandas as pd
 import numpy as np
-import uuid
 import logging
 from main.data_cleaning import DataCleaning
 import unittest
