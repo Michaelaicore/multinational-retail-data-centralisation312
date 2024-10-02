@@ -75,21 +75,22 @@ You can view the CI status and logs [here](https://github.com/Michaelaicore/mult
 ## Installation
 1. Clone the repository:
 
-        ```bash
-        git clone https://github.com/Michaelaicore/multinational-retail-data-centralisation312.git
-        cd multinational-retail-data-centralisation312
+```bash
+git clone https://github.com/Michaelaicore/multinational-retail-data-centralisation312.git
+cd multinational-retail-data-centralisation312
+```
 
 2. **Create and activate your Python environment.** If you are using a virtual environment, activate it by running:
 
-        ```bash
-        python3 -m venv env
-        source env/bin/activate
-        ```
+```bash
+python3 -m venv env
+source env/bin/activate
+```
 3. **Ensure you have all necessary dependencies installed.** If you haven't already set up your environment, you may need to install dependencies using `pip`:
 
-        ```bash
-        pip install -r requirements.txt
-        ```
+```bash
+pip install -r requirements.txt
+```
 4. **Set up your AWS credentials in ~/.aws/credentials.** 
 
     4.1 ***Install AWS CLI*** If you haven't instal AWS CLI, go to [link](https://aws.amazon.com/cli/), follow the instruction to install AWS CLI regarding to your system. 
@@ -98,45 +99,46 @@ You can view the CI status and logs [here](https://github.com/Michaelaicore/mult
 
     4.3 ***Configure AWS CLI*** run following code, use access key pair complete the setup [process](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html#cli-configure-files-methods)
 
-        ```bash
-        aws configure
-        ```
+```bash
+aws configure
+```
 5. **Install and configure your PostgreSQL database settings in the environment variables.**
 
     5.1 ***Create a database named sales_data***
 
-        ```bash
-        sudo -u postgres psql
-        CREATE DATABASE sales_data;
+```bash
+sudo -u postgres psql
+CREATE DATABASE sales_data;
 
-        ```
+```
 
     5.2 ***Create original and target(local) database access credentials***
 
         . Source database credential in yaml file, db_creds.yaml, in root directory in project as following format:
 
-        ```bash
-        RDS_HOST: *********************
-        RDS_PASSWORD: **********************
-        RDS_USER: **************
-        RDS_DATABASE: **********************
-        RDS_PORT: **********************
-        ```
+```bash
+RDS_HOST: *********************
+RDS_PASSWORD: **********************
+RDS_USER: **************
+RDS_DATABASE: **********************
+RDS_PORT: **********************
+```
         . Target basebase credential in yaml file, target_db_creds.yaml, in following format:
 
-        ```bash
-        RDS_HOST: localhost
-        RDS_PASSWORD: ***************
-        RDS_USER: ***************
-        RDS_DATABASE: sales_data
-        RDS_PORT: ***************
-        header:
-        {"x-api-key": ***************}
-        number_of_stores_endpoint: ***************
-        store_details_endpoint: ***************
-        product_table_link: ***************
-        date_model_link: ***************
-        card_details_link: ***************
+```bash
+RDS_HOST: localhost
+RDS_PASSWORD: ***************
+RDS_USER: ***************
+RDS_DATABASE: sales_data
+RDS_PORT: ***************
+header:
+{"x-api-key": ***************}
+number_of_stores_endpoint: ***************
+store_details_endpoint: ***************
+product_table_link: ***************
+date_model_link: ***************
+card_details_link: ***************
+```
 
 ## Usage 
 
