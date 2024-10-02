@@ -30,7 +30,9 @@
 This project is designed to automate the extraction, validation, and storage of sales data from various sources. It facilitates efficient data handling processes, ensuring data integrity by leveraging validation through Pydantic models. The goal is to clean and process large datasets before storing them in a PostgreSQL database for further analysis and reporting.
 
 
-## The following Entity-Relationship Diagram (ERD) represents the structure of the PostgreSQL database used in this project:
+## ER Diagram
+
+The following Entity-Relationship Diagram (ERD) represents the structure of the PostgreSQL database used in this project:
 
 ![ER Diagram](sales_database.png)
 
