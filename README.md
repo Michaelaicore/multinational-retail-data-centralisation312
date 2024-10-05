@@ -65,7 +65,9 @@ Python 3.8: Skilled in handling large datasets, building efficient data pipeline
 Pydantic v2: Ensures schema validation and consistency across data flows, improving data reliability and quality in ETL pipelines.
 Database Management:
 
-#### PostgreSQL: Proficient in managing relational data, executing [complex queries](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/SQL_querying.sql#L268C1-L268C8), optimising performance, and performing [schema updates](https://github.dev/Michaelaicore/multinational-retail-data-centralisation312/blob/main/main/schema_setting.ipynb).
+#### PostgreSQL: 
+
+Proficient in managing relational data, executing [complex queries](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/SQL_querying.sql#L268C1-L268C8), optimising performance, and performing [schema updates](https://github.dev/Michaelaicore/multinational-retail-data-centralisation312/blob/main/main/schema_setting.ipynb).
 
 #### Cloud:
 
@@ -186,7 +188,7 @@ You can view the CI status and logs [here](https://github.com/Michaelaicore/mult
 
 2.  Execute the SQL scripts provided in the project to update or query the database schema:
 
-    schema_setting.ipynb and schema_setting.sql: These scripts handle schema settings for the database. Run the .ipynb file using Jupyter Notebook or the .sql file directly in your SQL environment.
+    schema_setting.ipynb (to display schema_setting.ipynb, click [link](https://nbviewer.org/github/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/schema_setting.ipynb)) and schema_setting.sql: These scripts handle schema settings for the database. Run the .ipynb file using Jupyter Notebook or the .sql file directly in your SQL environment.
 
     SQL_querying.ipynb and SQL_querying.sql: These scripts perform SQL queries on the data. Like the schema script, you can run the .ipynb in Jupyter or execute the .sql file in your SQL environment.
 
