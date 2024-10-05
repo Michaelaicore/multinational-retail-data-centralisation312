@@ -19,52 +19,73 @@
 
 ## Table of Contents
 1. [Project Description](#project-description)
-2. [Continuous Integration](#continuous-integration)
-3. [Installation](#installation)
-4. [Usage](#usage)
-5. [File Structure](#file-structure)
-6. [License](#license)
+2. [Database ER Diagram](#database-er-diagram)
+3. [Continuous Integration](#continuous-integration)
+4. [Installation](#installation)
+5. [Usage](#usage)
+6. [File Structure](#file-structure)
+7. [License](#license)
 
 ## Project Description
 
 This project is designed to automate the extraction, validation, and storage of sales data from various sources. It facilitates efficient data handling processes, ensuring data integrity by leveraging validation through Pydantic models. The goal is to clean and process large datasets before storing them in a PostgreSQL database for further analysis and reporting.
 
 
-## ER Diagram
+## Database ER Diagram
 
 The following Entity-Relationship Diagram (ERD) represents the structure of the PostgreSQL database used in this project:
 
 ![ER Diagram](sales_database.png)
 
 ### Key Features:
+Data Extraction and Migration:
+Extracts all data and tables from [AWS S3](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/data_extraction.py#L111), including files in formats such as [CSV](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/data_extraction.py#L290), [JSON](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/data_extraction.py#L298), and [PDFs](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/data_extraction.py#L153), as well as data from [API endpoints](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/data_extraction.py#L245). This integrated approach ensures seamless migration of cloud-stored data from S3 to [PostgreSQL](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/database_utils.py#L197).
 
-- Data Extraction from Multiple Sources:
-Extract sales data from various sources such as CSV, API endpoints, and AWS S3 stored files (JSON).
-- Data Validation Using Pydantic:
-Pydantic models ensure the integrity of incoming data by validating its structure and content before processing.
-- Data Cleaning:
-Data is cleaned and normalized, ensuring consistency across sources.
-- Data Storage in PostgreSQL:
-Processed and validated data is stored in a PostgreSQL database for future use and analysis.
-- AWS S3 Integration:
-JSON files are fetched from AWS S3 storage, allowing for seamless integration of cloud data sources.
-- Error Logging and Reporting:
-Logs are maintained for tracking validation errors, failed extractions, and other pipeline issues.
-- Automated Workflow:
-The entire pipeline can be scheduled and automated for regular data ingestion and storage.
+Data Validation, Cleaning, and [Logging](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/tree/c24ed8fe30a3d823a8d214dd895a64e32253db6c/logging):
+Pydantic models validate the structure and content of all incoming data, while Python’s [logging module](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/data_cleaning.py#L46) tracks validation errors, ensuring only clean and all [valid data](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/logging/DateModel/data_cleaning_invalid_data.csv#L1) is stored in the PostgreSQL database.
 
-### Technology involved:
+Error Logging and Reporting:
+[Logs](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/data_extraction.py#L294) are maintained to capture any validation issues, extraction failures, or pipeline errors for efficient debugging and reporting.
 
-- Programming Language: Python 3.8, handling large datasets in Python
-- Data Validation: Pydantic (v2)
-- Database: PostgreSQL
-- Cloud Storage: AWS S3
-- Data Handling Libraries:
-    . Pandas for data manipulation
-    . SQLAlchemy for database operations
-    . Requests for API interactions
-- Testing: Unittest framework
-- Logging: Python's logging module for capturing errors and tracking process flows.
+
+### Skills and Technology:
+
+#### Programming Language:
+
+Python 3.8: Skilled in handling large datasets, building efficient data pipelines, and optimizing performance. Proficient in writing clean, maintainable, and modular code.
+
+- Packaging and Virtual Environments: Expertise in packaging Python projects, managing dependencies using virtual environments (venv), and ensuring isolated, reproducible environments.
+
+- Version Control: Proficient with Git for version control, branching strategies, and collaborating in a team environment using GitHub.
+
+- GitHub Actions & CI/CD: Experience with GitHub Actions for automating testing, and continuous integration workflows to ensure smooth delivery pipelines.
+
+#### Data Validation:
+
+Pydantic v2: Ensures schema validation and consistency across data flows, improving data reliability and quality in ETL pipelines.
+Database Management:
+
+#### PostgreSQL: Proficient in managing relational data, executing [complex queries](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/SQL_querying.sql#L268C1-L268C8), optimising performance, and performing [schema updates](https://github.dev/Michaelaicore/multinational-retail-data-centralisation312/blob/main/main/schema_setting.ipynb).
+
+#### Cloud:
+
+AWS S3: Experience in scalable data retrieval and management of cloud-based datasets using boto3 for efficient AWS S3 data integration into pipelines.
+
+#### Data Handling Libraries:
+
+- Pandas: For high-level data manipulation, transformation, and analysis of large datasets.
+- [SQLAlchemy](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/database_utils.py#L157): Expertise in object-relational mapping (ORM) and efficient database interaction.
+- Requests: For seamless API interaction and integration with external data sources.
+Testing:
+
+#### [unittest](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/tree/c24ed8fe30a3d823a8d214dd895a64e32253db6c/test): 
+
+Writing comprehensive unit tests to ensure the reliability, accuracy, and performance of code and data processes.
+
+
+#### Logging:
+
+Python’s logging module: Setting up robust logging systems for capturing [detailed logs, debugging](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/database_utils.py#L86), and [tracking process execution](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/data_cleaning.py#L655) and [error handling](https://github.com/Michaelaicore/multinational-retail-data-centralisation312/blob/c24ed8fe30a3d823a8d214dd895a64e32253db6c/main/database_utils.py#L164).
 
 ## Continuous Integration
 
@@ -82,22 +103,22 @@ You can view the CI status and logs [here](https://github.com/Michaelaicore/mult
 ## Installation
 1. Clone the repository:
 
-```bash
-git clone https://github.com/Michaelaicore/multinational-retail-data-centralisation312.git
-cd multinational-retail-data-centralisation312
-```
+    ```bash
+    git clone https://github.com/Michaelaicore/multinational-retail-data-centralisation312.git
+    cd multinational-retail-data-centralisation312
+    ```
 
 2. **Create and activate your Python environment.** If you are using a virtual environment, activate it by running:
 
-```bash
-python3 -m venv env
-source env/bin/activate
-```
+    ```bash
+    python3 -m venv env
+    source env/bin/activate
+    ```
 3. **Ensure you have all necessary dependencies installed.** If you haven't already set up your environment, you may need to install dependencies using `pip`:
 
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    pip install -r requirements.txt
+    ```
 4. **Set up your AWS credentials in ~/.aws/credentials.** 
 
     4.1 ***Install AWS CLI*** If you haven't instal AWS CLI, go to [link](https://aws.amazon.com/cli/), follow the instruction to install AWS CLI regarding to your system. 
@@ -106,46 +127,46 @@ pip install -r requirements.txt
 
     4.3 ***Configure AWS CLI*** run following code, use access key pair complete the setup [process](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html#cli-configure-files-methods)
 
-```bash
-aws configure
-```
+    ```bash
+    aws configure
+    ```
+
 5. **Install and configure your PostgreSQL database settings in the environment variables.**
 
     5.1 ***Create a database named sales_data***
 
-```bash
-sudo -u postgres psql
-CREATE DATABASE sales_data;
+    ```bash
+    sudo -u postgres psql
+    CREATE DATABASE sales_data;
 
-```
-
+    ```
     5.2 ***Create original and target(local) database access credentials***
 
-        . Source database credential in yaml file, db_creds.yaml, in root directory in project as following format:
+    . Source database credential in yaml file, db_creds.yaml, in root directory in project as following format:
 
-```bash
-RDS_HOST: *********************
-RDS_PASSWORD: **********************
-RDS_USER: **************
-RDS_DATABASE: **********************
-RDS_PORT: **********************
-```
-        . Target basebase credential in yaml file, target_db_creds.yaml, in following format:
+    ```bash
+    RDS_HOST: *********************
+    RDS_PASSWORD: **********************
+    RDS_USER: **************
+    RDS_DATABASE: **********************
+    RDS_PORT: **********************
+    ```
+    . Target basebase credential in yaml file, target_db_creds.yaml, in following format:
 
-```bash
-RDS_HOST: localhost
-RDS_PASSWORD: ***************
-RDS_USER: ***************
-RDS_DATABASE: sales_data
-RDS_PORT: ***************
-header:
-{"x-api-key": ***************}
-number_of_stores_endpoint: ***************
-store_details_endpoint: ***************
-product_table_link: ***************
-date_model_link: ***************
-card_details_link: ***************
-```
+    ```bash
+    RDS_HOST: localhost
+    RDS_PASSWORD: ***************
+    RDS_USER: ***************
+    RDS_DATABASE: sales_data
+    RDS_PORT: ***************
+    header:
+    {"x-api-key": ***************}
+    number_of_stores_endpoint: ***************
+    store_details_endpoint: ***************
+    product_table_link: ***************
+    date_model_link: ***************
+    card_details_link: ***************
+    ```
 
 ## Usage 
 
